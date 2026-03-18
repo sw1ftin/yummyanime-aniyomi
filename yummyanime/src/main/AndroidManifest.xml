@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature android:name="tachiyomi.animeextension" />
+
+    <application
+        android:allowBackup="false"
+        android:icon="@android:drawable/sym_def_app_icon"
+        android:label="Aniyomi: YummyAnime">
+
+        <meta-data
+            android:name="tachiyomi.animeextension.class"
+            android:value=".YummyAnime" />
+        <meta-data
+            android:name="tachiyomi.animeextension.nsfw"
+            android:value="0" />
+
+    </application>
+
+</manifest>
+
