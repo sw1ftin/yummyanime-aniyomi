@@ -149,7 +149,7 @@ class YummyAnime : AnimeHttpSource(), ConfigurableAnimeSource {
         val grouped = parseVideoEntries(root.optJSONArray("videos"))
             .groupBy { it.number }
             .toList()
-            .sortedBy { sortEpisodeNumber(it.first) }
+            .sortedByDescending { sortEpisodeNumber(it.first) }
 
         return grouped.map { (number, videos) ->
             val episode = SEpisode.create()
