@@ -53,7 +53,7 @@ class YummyAnime : AnimeHttpSource(), ConfigurableAnimeSource {
     }
 
     private val publicToken: String
-        get() = preferences.getString(PREF_PUBLIC_TOKEN, "")!!.trim()
+        get() = preferences.getString(PREF_PUBLIC_TOKEN, DEFAULT_PUBLIC_TOKEN)!!.trim()
 
     private val privateToken: String
         get() = preferences.getString(PREF_PRIVATE_TOKEN, "")!!.trim()
@@ -179,17 +179,30 @@ class YummyAnime : AnimeHttpSource(), ConfigurableAnimeSource {
             isSelectable = false
         }.also(screen::addPreference)
 
-        EditTextPreference(screen.context).apply {
+        val publicTokenPref = EditTextPreference(screen.context).apply {
             key = PREF_PUBLIC_TOKEN
             title = "PUBLIC TOKEN"
-            summary = publicToken.ifBlank { "Нажми, чтобы указать публичный токен для X-Application" }
+            summary = publicToken
             dialogTitle = title
             setOnBindEditTextListener {
                 it.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
             }
             setOnPreferenceChangeListener { preference, newValue ->
-                preference.summary = (newValue as String).trim()
-                    .ifBlank { "Нажми, чтобы указать публичный токен для X-Application" }
+                val newVal = (newValue as String).trim().ifBlank { DEFAULT_PUBLIC_TOKEN }
+                preference.summary = newVal
+                true
+            }
+        }
+        screen.addPreference(publicTokenPref)
+
+        Preference(screen.context).apply {
+            title = "Сбросить PUBLIC TOKEN"
+            summary = "Вернуть значение по умолчанию: $DEFAULT_PUBLIC_TOKEN"
+            setOnPreferenceClickListener {
+                preferences.edit().putString(PREF_PUBLIC_TOKEN, DEFAULT_PUBLIC_TOKEN).apply()
+                publicTokenPref.text = DEFAULT_PUBLIC_TOKEN
+                publicTokenPref.summary = DEFAULT_PUBLIC_TOKEN
+                Toast.makeText(screen.context, "Public Token сброшен", Toast.LENGTH_SHORT).show()
                 true
             }
         }.also(screen::addPreference)
@@ -291,7 +304,7 @@ class YummyAnime : AnimeHttpSource(), ConfigurableAnimeSource {
         SwitchPreferenceCompat(screen.context).apply {
             key = PREF_DEBUG_ENABLED
             title = "Включить debug лог"
-            setDefaultValue(true)
+            setDefaultValue(false)
             summary = if (isDebugEnabled()) {
                 "Включено. Ошибки и шаги извлечения видео сохраняются в настройках."
             } else {
@@ -540,7 +553,7 @@ class YummyAnime : AnimeHttpSource(), ConfigurableAnimeSource {
     }
 
     private fun isDebugEnabled(): Boolean {
-        return preferences.getBoolean(PREF_DEBUG_ENABLED, true)
+        return preferences.getBoolean(PREF_DEBUG_ENABLED, false)
     }
 
     private fun getDebugLogText(): String {
@@ -711,6 +724,7 @@ class YummyAnime : AnimeHttpSource(), ConfigurableAnimeSource {
         private const val API_BASE_URL = "https://api.yani.tv"
         private const val SITE_URL = "https://yummyani.me/"
         private const val PAGE_SIZE = 20
+        private const val DEFAULT_PUBLIC_TOKEN = "yp_ls7tmtv9n74hp"
         private const val PREF_PUBLIC_TOKEN = "public_token"
         private const val PREF_PRIVATE_TOKEN = "private_token"
         private const val PREF_DEBUG_ENABLED = "debug_enabled"

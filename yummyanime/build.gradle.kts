@@ -1,3 +1,5 @@
+import java.net.URI
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -14,6 +16,15 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "14.1"
+    }
+
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            isUniversalApk = true
+        }
     }
 
     buildTypes {
@@ -34,6 +45,37 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
+
+    sourceSets {
+        getByName("main") {
+            res.srcDir("src/main/res")
+        }
+    }
+}
+
+val downloadIcon = tasks.register("downloadIcon") {
+    val iconFile = file("src/main/res/drawable/icon.png")
+    outputs.file(iconFile)
+    
+    doLast {
+        if (!iconFile.exists()) {
+            iconFile.parentFile.mkdirs()
+            println("Downloading icon from yummyani.me...")
+            runCatching {
+                URI("https://site.yummyani.me/img/icon/yummy-32.png").toURL().openStream().use { input ->
+                    iconFile.outputStream().use { output ->
+                        input.copyTo(output)
+                    }
+                }
+            }.onFailure { 
+                println("Failed to download icon: ${it.message}")
+            }
+        }
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn(downloadIcon)
 }
 
 dependencies {
