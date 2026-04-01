@@ -1,4 +1,5 @@
 # YummyAnime Aniyomi Extension
+![GitHub Release](https://img.shields.io/github/v/release/sw1ftin/yummyanime-aniyomi) ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/sw1ftin/yummyanime-aniyomi/total)  
 Расширение для [Aniyomi](https://github.com/aniyomiorg/aniyomi) и его форков (например, [Animiru](https://github.com/quickdesh/Animiru)).
 
 > [!WARNING]
